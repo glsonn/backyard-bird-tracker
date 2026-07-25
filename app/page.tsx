@@ -312,7 +312,7 @@ export default function Home() {
 
   async function handleDelete(id: string) {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this sighting?",
+      "Remove this sighting from your journal?\n\nThis action can't be undone.",
     );
 
     if (!confirmed) {
