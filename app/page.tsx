@@ -24,7 +24,15 @@ export default function Home() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
+  const [sortOrder, setSortOrder] = useState<SortOrder>(() => {
+    if (typeof window === "undefined") {
+      return "newest";
+    }
+
+    const saved = localStorage.getItem("sortOrder");
+
+    return saved === "oldest" ? "oldest" : "newest";
+  });
   const [speciesFilter, setSpeciesFilter] = useState<string>("");
   const [selectedSpecies, setSelectedSpecies] = useState<string>("");
   const sightingsRef = useRef<HTMLDivElement | null>(null);
@@ -56,6 +64,18 @@ export default function Home() {
   useEffect(() => {
     fetchSightings();
   }, []);
+
+  useEffect(() => {
+    const savedSortOrder = localStorage.getItem("sortOrder");
+
+    if (savedSortOrder === "newest" || savedSortOrder === "oldest") {
+      setSortOrder(savedSortOrder);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("sortOrder", sortOrder);
+  }, [sortOrder]);
 
   const displayedSightings = sightings
     .filter((sighting) => {
