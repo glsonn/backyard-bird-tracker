@@ -380,7 +380,7 @@ export default function Home() {
       </h1>
 
       {!isFetching && totalSightings === 0 && (
-        <p>Start your bird journal by recording the visitors you see today.</p>
+        <p>Start your bird journal by recording your first visitors today.</p>
       )}
 
       <SightingsForm
@@ -394,10 +394,15 @@ export default function Home() {
         lastSeenSighting={lastSeenSighting}
       />
 
-      {!isFetching && totalSightings === 0 && <p>No sightings recorded yet.</p>}
+      {!isFetching && totalSightings === 0 && (
+        <p>Record today's first visitor above.</p>
+      )}
 
       {!isFetching && totalSightings > 0 && displayedSightings.length === 0 && (
-        <p>No sightings match your filter.</p>
+        <>
+          <p>No sightings match the selected bird.</p>
+          <p>Try choosing "All Birds" to view your full journal.</p>
+        </>
       )}
 
       {displayedSightings.length > 0 && (
@@ -569,41 +574,48 @@ export default function Home() {
           Species Seen ({speciesSeenList.length})
         </h2>
 
-        <ul
-          style={{
-            margin: 0,
-            paddingLeft: "1.25rem",
-          }}
-        >
-          {speciesSummary.map((bird) => (
-            <div
-              key={bird.species}
-              style={{
-                marginBottom: "0.75rem",
-              }}
-            >
+        {speciesSummary.length === 0 ? (
+          <p>
+            As you record birds, this list will become a living history of your
+            backyard visitors.
+          </p>
+        ) : (
+          <ul
+            style={{
+              margin: 0,
+              paddingLeft: "1.25rem",
+            }}
+          >
+            {speciesSummary.map((bird) => (
               <div
+                key={bird.species}
                 style={{
-                  fontWeight: 600,
+                  marginBottom: "0.75rem",
                 }}
               >
-                {bird.species}
-              </div>
+                <div
+                  style={{
+                    fontWeight: 600,
+                  }}
+                >
+                  {bird.species}
+                </div>
 
-              <div
-                style={{
-                  fontSize: "0.9rem",
-                  color: "#666",
-                }}
-              >
-                {bird.sightingsCount}{" "}
-                {bird.sightingsCount === 1 ? "sighting" : "sightings"}
-                {" • Last seen "}
-                {formatDate(bird.lastSeen)}
+                <div
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "#666",
+                  }}
+                >
+                  {bird.sightingsCount}{" "}
+                  {bird.sightingsCount === 1 ? "sighting" : "sightings"}
+                  {" • Last seen "}
+                  {formatDate(bird.lastSeen)}
+                </div>
               </div>
-            </div>
-          ))}
-        </ul>
+            ))}
+          </ul>
+        )}
       </div>
 
       <SeasonalTracking
