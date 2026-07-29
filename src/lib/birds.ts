@@ -7,6 +7,7 @@ export const birds = [
   "Barn Swallow",
   "Black-capped Chickadee",
   "Blue Jay",
+  "Blue-gray Gnatcatcher",
   "Brown Thrasher",
   "Brown-headed Cowbird",
   "Canada Goose",
