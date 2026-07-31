@@ -61,6 +61,8 @@ export default function SightingsList({
 
   const [collapsedDates, setCollapsedDates] = useState<Set<string>>(new Set());
 
+  const [showOlderSightings, setShowOlderSightings] = useState(false);
+
   const hasInitializedCollapseState = useRef(false);
 
   useEffect(() => {
@@ -127,6 +129,18 @@ export default function SightingsList({
 
   const today = getTodayDateString();
 
+  const recentDates = new Set(
+    [...groups]
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 7)
+      .map((group) => group.date),
+  );
+
+  const visibleGroups =
+    showOlderSightings || groups.length <= 7
+      ? groups
+      : groups.filter((group) => recentDates.has(group.date));
+
   return (
     <>
       {isRefreshing && (
@@ -150,7 +164,7 @@ export default function SightingsList({
         }}
       >
         {" "}
-        {groups.map((group) => {
+        {visibleGroups.map((group) => {
           const isCollapsed = collapsedDates.has(group.date);
 
           return (
@@ -504,6 +518,24 @@ export default function SightingsList({
           );
         })}
       </ul>
+      {groups.length > 7 && (
+        <button
+          type="button"
+          onClick={() => setShowOlderSightings((prev) => !prev)}
+          style={{
+            display: "block",
+            margin: "0.5rem auto 1rem",
+            padding: "0.5rem 0.75rem",
+            border: "none",
+            background: "none",
+            color: "#2563eb",
+            cursor: "pointer",
+            fontSize: "0.9rem",
+          }}
+        >
+          {showOlderSightings ? "Hide older sightings" : "Show older sightings"}
+        </button>
+      )}
     </>
   );
 }
