@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   getSightings,
+  findJournal,
   createSighting,
   deleteSighting,
   updateSighting,
@@ -14,6 +15,7 @@ import SeasonalTracking from "@/components/SeasonalTracking";
 import { formatDate, daysSince } from "@/lib/dateUtils";
 import { birds } from "@/lib/birds";
 import type { Sighting, SightingDayGroup } from "@/types/sighting";
+import { getUserId, setUserId } from "@/lib/userId";
 
 type SortOrder = "newest" | "oldest";
 
@@ -21,6 +23,10 @@ export default function Home() {
   const [sightings, setSightings] = useState<Sighting[]>([]);
   const [loading, setLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [journalId, setJournalId] = useState("");
+  const [recoveryId, setRecoveryId] = useState("");
+  const [recoveryMessage, setRecoveryMessage] = useState("");
+  const [isRecovering, setIsRecovering] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -66,6 +72,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    setJournalId(getUserId());
+  }, []);
+
+  useEffect(() => {
     const savedSortOrder = localStorage.getItem("sortOrder");
 
     if (savedSortOrder === "newest" || savedSortOrder === "oldest") {
@@ -76,6 +86,53 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("sortOrder", sortOrder);
   }, [sortOrder]);
+
+  async function handleJournalRecovery() {
+    const id = recoveryId.trim();
+
+    if (!id) {
+      setRecoveryMessage("Please enter your Journal ID.");
+      return;
+    }
+
+    setIsRecovering(true);
+    setRecoveryMessage("");
+
+    try {
+      const { count, error } = await findJournal(id);
+
+      if (error) {
+        console.error(error);
+        setRecoveryMessage(
+          "We couldn't check that Journal ID. Please try again.",
+        );
+        return;
+      }
+
+      if (!count) {
+        setRecoveryMessage(
+          "No sightings were found for that Journal ID. Please check the ID and try again.",
+        );
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `We found ${count} ${count === 1 ? "sighting" : "sightings"} in that journal. Restore it on this browser?`,
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      setUserId(id);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      setRecoveryMessage("Network error while checking the Journal ID.");
+    } finally {
+      setIsRecovering(false);
+    }
+  }
 
   const displayedSightings = sightings
     .filter((sighting) => {
@@ -773,6 +830,117 @@ export default function Home() {
           onUpdateSighting={handleUpdateSighting}
           birds={birds}
         />
+      </div>
+
+      <div
+        style={{
+          marginTop: "2rem",
+          paddingTop: "1.5rem",
+          borderTop: "1px solid #ddd",
+        }}
+      >
+        <h2
+          style={{
+            marginTop: 0,
+            fontSize: "1rem",
+          }}
+        >
+          Journal Recovery
+        </h2>
+
+        <p
+          style={{
+            fontSize: "0.9rem",
+            color: "#666",
+            lineHeight: 1.5,
+          }}
+        >
+          Your journal is connected to this browser using a unique Journal ID.
+          Keep this ID somewhere safe in case your browser data is ever cleared.
+        </p>
+
+        <p
+          style={{
+            fontSize: "0.85rem",
+            wordBreak: "break-all",
+            backgroundColor: "#f5f5f5",
+            padding: "0.75rem",
+            borderRadius: "6px",
+          }}
+        >
+          <strong>Your Journal ID:</strong>
+          <br />
+          {journalId}
+        </p>
+
+        <details style={{ marginTop: "1rem" }}>
+          <summary
+            style={{
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            Restore an existing journal
+          </summary>
+
+          <div style={{ marginTop: "1rem" }}>
+            <label
+              htmlFor="recoveryId"
+              style={{
+                display: "block",
+                marginBottom: "0.35rem",
+                fontSize: "0.9rem",
+              }}
+            >
+              Previous Journal ID
+            </label>
+
+            <input
+              id="recoveryId"
+              type="text"
+              value={recoveryId}
+              onChange={(e) => setRecoveryId(e.target.value)}
+              placeholder="Enter your previous Journal ID"
+              style={{
+                display: "block",
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "0.5rem",
+                border: "1px solid #ccc",
+                borderRadius: "6px",
+                marginBottom: "0.75rem",
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={handleJournalRecovery}
+              disabled={isRecovering}
+              style={{
+                padding: "0.5rem 0.75rem",
+                borderRadius: "6px",
+                border: "none",
+                backgroundColor: isRecovering ? "#999" : "#355c45",
+                color: "white",
+                cursor: isRecovering ? "not-allowed" : "pointer",
+              }}
+            >
+              {isRecovering ? "Checking…" : "Restore Journal"}
+            </button>
+
+            {recoveryMessage && (
+              <p
+                style={{
+                  marginTop: "0.75rem",
+                  color: "#666",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {recoveryMessage}
+              </p>
+            )}
+          </div>
+        </details>
       </div>
     </main>
   );

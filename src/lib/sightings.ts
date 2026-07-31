@@ -9,6 +9,13 @@ export async function getSightings() {
     .order("created_at", { ascending: false });
 }
 
+export async function findJournal(userId: string) {
+  return await supabase
+    .from("sightings")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+}
+
 export async function createSighting(
   species: string,
   count: number,

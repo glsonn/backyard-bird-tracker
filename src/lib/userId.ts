@@ -17,3 +17,11 @@ export function getUserId(): string {
 
   return newId;
 }
+
+export function setUserId(userId: string): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  localStorage.setItem(STORAGE_KEY, userId);
+}
