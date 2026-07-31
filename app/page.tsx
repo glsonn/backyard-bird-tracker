@@ -27,6 +27,7 @@ export default function Home() {
   const [recoveryId, setRecoveryId] = useState("");
   const [recoveryMessage, setRecoveryMessage] = useState("");
   const [isRecovering, setIsRecovering] = useState(false);
+  const [copyMessage, setCopyMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -131,6 +132,20 @@ export default function Home() {
       setRecoveryMessage("Network error while checking the Journal ID.");
     } finally {
       setIsRecovering(false);
+    }
+  }
+
+  async function handleCopyJournalId() {
+    try {
+      await navigator.clipboard.writeText(journalId);
+      setCopyMessage("Copied!");
+
+      setTimeout(() => {
+        setCopyMessage("");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      setCopyMessage("Unable to copy.");
     }
   }
 
@@ -859,19 +874,55 @@ export default function Home() {
           Keep this ID somewhere safe in case your browser data is ever cleared.
         </p>
 
-        <p
-          style={{
-            fontSize: "0.85rem",
-            wordBreak: "break-all",
-            backgroundColor: "#f5f5f5",
-            padding: "0.75rem",
-            borderRadius: "6px",
-          }}
-        >
-          <strong>Your Journal ID:</strong>
-          <br />
-          {journalId}
-        </p>
+        <div style={{ marginTop: "1rem" }}>
+          <strong
+            style={{
+              display: "block",
+              marginBottom: "0.35rem",
+              fontSize: "0.9rem",
+            }}
+          >
+            Your Journal ID
+          </strong>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "stretch",
+              gap: "0.5rem",
+            }}
+          >
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+                backgroundColor: "#f5f5f5",
+                padding: "0.75rem",
+                borderRadius: "6px",
+                fontSize: "0.85rem",
+                wordBreak: "break-all",
+                lineHeight: 1.4,
+              }}
+            >
+              {journalId}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCopyJournalId}
+              style={{
+                padding: "0.5rem 0.75rem",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                backgroundColor: "white",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {copyMessage || "Copy"}
+            </button>
+          </div>
+        </div>
 
         <details style={{ marginTop: "1rem" }}>
           <summary
