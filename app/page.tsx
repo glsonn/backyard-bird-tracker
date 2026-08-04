@@ -417,21 +417,22 @@ export default function Home() {
       location: string;
       date_seen: string;
     },
-  ) {
+  ): Promise<boolean> {
     const { data, error } = await updateSighting(id, draft);
 
     if (error) {
       console.error(error);
       setErrorMessage("Error updating sighting");
       setTimeout(() => setErrorMessage(""), 2500);
-      return;
+      return false;
     }
 
     if (data) {
       setSightings((prev) => prev.map((s) => (s.id === data.id ? data : s)));
     }
-  }
 
+    return true;
+  }
   const lastSeenSighting = sightings
     .filter((sighting) => sighting.species === selectedSpecies)
     .sort((a, b) => b.date_seen.localeCompare(a.date_seen))[0];

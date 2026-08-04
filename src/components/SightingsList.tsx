@@ -34,7 +34,7 @@ type Props = {
       location: string;
       date_seen: string;
     },
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   birds: string[];
 };
 
@@ -62,6 +62,8 @@ export default function SightingsList({
   const [collapsedDates, setCollapsedDates] = useState<Set<string>>(new Set());
 
   const [showOlderSightings, setShowOlderSightings] = useState(false);
+
+  const [updateMessage, setUpdateMessage] = useState("");
 
   const hasInitializedCollapseState = useRef(false);
 
@@ -335,6 +337,18 @@ export default function SightingsList({
                               />
                             </div>
 
+                            {updateMessage && (
+                              <p
+                                style={{
+                                  margin: "0 0 0.75rem",
+                                  color: "#355c45",
+                                  fontSize: "0.9rem",
+                                }}
+                              >
+                                {updateMessage}
+                              </p>
+                            )}
+
                             <button
                               type="button"
                               onClick={() => {
@@ -356,7 +370,9 @@ export default function SightingsList({
                             <button
                               type="button"
                               onClick={async () => {
-                                if (!draftSighting || !editingId) return;
+                                if (!editingId || !draftSighting) {
+                                  return;
+                                }
 
                                 const validationError = validateSighting(
                                   draftSighting.species,
@@ -368,13 +384,20 @@ export default function SightingsList({
                                   return;
                                 }
 
-                                await onUpdateSighting(
+                                const updated = await onUpdateSighting(
                                   editingId,
                                   draftSighting,
                                 );
 
-                                setEditingId(null);
-                                setDraftSighting(null);
+                                if (updated) {
+                                  setUpdateMessage("✓ Sighting updated.");
+
+                                  setTimeout(() => {
+                                    setUpdateMessage("");
+                                    setEditingId(null);
+                                    setDraftSighting(null);
+                                  }, 2500);
+                                }
                               }}
                               style={{
                                 padding: "0.4rem 0.7rem",
