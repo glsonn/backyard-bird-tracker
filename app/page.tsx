@@ -476,7 +476,8 @@ export default function Home() {
           textAlign: "center",
         }}
       >
-        Don't see the bird you're looking for?{" "}
+        Don't see the bird you're looking for?
+        <br />
         <a
           href="mailto:contact@backyardbirdtracker.com"
           style={{
