@@ -467,6 +467,27 @@ export default function Home() {
         lastSeenSighting={lastSeenSighting}
       />
 
+      <p
+        style={{
+          marginTop: "-0.25rem",
+          marginBottom: "1.5rem",
+          fontSize: "0.85rem",
+          color: "#666",
+          textAlign: "center",
+        }}
+      >
+        Don't see the bird you're looking for?{" "}
+        <a
+          href="mailto:contact@backyardbirdtracker.com"
+          style={{
+            color: "#355c45",
+            fontWeight: 600,
+          }}
+        >
+          Let us know.
+        </a>
+      </p>
+
       {!isFetching && totalSightings === 0 && (
         <p>Record today's first visitor above.</p>
       )}
