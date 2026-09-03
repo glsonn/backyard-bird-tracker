@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { birdImages } from "@/lib/birdImages";
 
 type Props = {
   value: string;
@@ -97,12 +99,29 @@ export default function SpeciesSelect({
                   setShowResults(false);
                 }}
                 style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
                   padding: "0.5rem",
                   borderBottom: "1px solid #eee",
                   cursor: "pointer",
                 }}
               >
-                {species}
+                {birdImages[species] && (
+                  <Image
+                    src={birdImages[species]}
+                    alt=""
+                    width={48}
+                    height={48}
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: "6px",
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+
+                <span>{species}</span>
               </div>
             ))}
           </div>

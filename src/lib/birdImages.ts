@@ -1,0 +1,9 @@
+export const birdImages: Record<string, string> = {
+  "American Goldfinch": "/birds/american-goldfinch.jpg",
+  "American Robin": "/birds/american-robin.jpg",
+  "Blue Jay": "/birds/blue-jay.jpg",
+  "Black-capped Chickadee": "/birds/black-capped-chickadee.jpg",
+  "Brown-headed Cowbird": "/birds/brown-headed-cowbird.jpg",
+  "Common Grackle": "/birds/common-grackle.jpg",
+  "Cooper's Hawk": "/birds/coopers-hawk.jpg",
+};
